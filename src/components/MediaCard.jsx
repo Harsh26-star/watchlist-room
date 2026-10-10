@@ -1,6 +1,4 @@
-import React from 'react'
-
-function MediaCard({media}) {
+function MediaCard({ media }) {
   return (
     <div>
       <h2>{media.title}</h2>

@@ -1,15 +1,11 @@
 import './App.css'
 import { mediaList } from './data/sampleMedia';
-import MediaCard from './components/MediaCard';
+import Collection from './components/Collection';
 
 function App() {
   return (
     <>
-      <ul>
-        {mediaList.map((media) => (
-          <MediaCard key={media.id} media={media} />
-        ))}
-      </ul >
+      <Collection items={mediaList}/>
     </>
   )
 }
