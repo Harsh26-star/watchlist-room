@@ -1,16 +1,15 @@
-import { useState } from 'react'
 import './App.css'
 import { mediaList } from './data/sampleMedia';
+import MediaCard from './components/MediaCard';
 
 function App() {
-  const medias = mediaList;
   return (
     <>
       <ul>
-        {medias.map((media) => (
-          <li key={media.id}>{media.title}</li>
+        {mediaList.map((media) => (
+          <MediaCard key={media.id} media={media} />
         ))}
-      </ul>
+      </ul >
     </>
   )
 }
