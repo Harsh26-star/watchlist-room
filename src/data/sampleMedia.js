@@ -33,5 +33,5 @@ export const mediaList = [
     type: "video",
     status: "planned",
     description: "A beginner-friendly tutorial covering JavaScript fundamentals and practical coding."
-  }
+  },
 ];
