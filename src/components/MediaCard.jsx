@@ -4,8 +4,7 @@ const statusStyle = {
   planned : "bg-gray-800 text-gray-200"
 }
 
-function MediaCard({ media }) {
-
+function MediaCard({ media, onDelete }) {
 
   return (
     <div className="p-3 border-2 rounded-2xl">
@@ -13,6 +12,7 @@ function MediaCard({ media }) {
       <p>{media.type}</p>
       <span className={`px-2 inline-block py-1 rounded-full text-sm ${statusStyle[media.status] ?? "bg-gray-800 text-gray-200"}`}>{media.status}</span>
       <p>{media.description}</p>
+      <button onClick={() => onDelete(media.id)}>Delete</button>
     </div>
   )
 }
