@@ -5,6 +5,7 @@ import Collection from './components/Collection';
 import Header from './components/Header';
 import SearchBar from './components/SearchBar';
 import StatusFilter from './components/StatusFilter';
+import AddMediaForm from './components/AddMediaForm';
 
 function App() {
 
@@ -21,8 +22,21 @@ function App() {
     setQuery(e.target.value)
   }
 
-  function handleFilter(s) {
-    setStatusFilter(s)
+  function handleFilter(status) {
+    setStatusFilter(status)
+  }
+
+  function handleAdd(title) {
+    if(title.trim() !== "") {setItems([
+      ...items,
+      {
+        id: Date.now(),
+        title: title.trim(),
+        type: "movie",
+        status: "planned",
+        description: ""
+      }
+    ])}
   }
 
   const visibleItems = items.filter((item) => {
@@ -37,7 +51,7 @@ function App() {
         <Header />
         <StatusFilter value={statusFilter} onChange={handleFilter} />
         <SearchBar value={query} onChange={handleSearch} />
-        <p>Searching for: {query}</p>
+        <AddMediaForm onAdd={handleAdd}/>
         <Collection items={visibleItems} onDelete={handleDelete} />
       </main>
     </>
