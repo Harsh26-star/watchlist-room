@@ -19,13 +19,15 @@ function App() {
     setQuery(e.target.value)
   }
 
+  const visibleItems = items.filter((item) => item.title.toLowerCase().includes(query.toLowerCase()))
+
   return (
     <>
       <main className='max-w-5xl mx-auto px-5'>
         <Header />
-        <SearchBar value={query} onChange={handleSearch}/>
+        <SearchBar value={query} onChange={handleSearch} />
         <p>Searching for: {query}</p>
-        <Collection items={items} onDelete={handleDelete}/>
+        <Collection items={visibleItems} onDelete={handleDelete} />
       </main>
     </>
   )
