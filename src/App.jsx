@@ -4,11 +4,13 @@ import { mediaList } from './data/sampleMedia';
 import Collection from './components/Collection';
 import Header from './components/Header';
 import SearchBar from './components/SearchBar';
+import StatusFilter from './components/StatusFilter';
 
 function App() {
 
   const [items, setItems] = useState(mediaList)
   const [query, setQuery] = useState("")
+  const [statusFilter, setStatusFilter] = useState("all");
 
   function handleDelete(id) {
     const newItems = items.filter((item) => item.id !== id)
@@ -19,12 +21,21 @@ function App() {
     setQuery(e.target.value)
   }
 
-  const visibleItems = items.filter((item) => item.title.toLowerCase().includes(query.toLowerCase()))
+  function handleFilter(s) {
+    setStatusFilter(s)
+  }
+
+  const visibleItems = items.filter((item) => {
+    const matchesQuery = item.title.toLowerCase().includes(query.toLowerCase())
+    const matchesStatus = statusFilter === "all" || item.status === statusFilter
+    return matchesQuery && matchesStatus
+  })
 
   return (
     <>
       <main className='max-w-5xl mx-auto px-5'>
         <Header />
+        <StatusFilter value={statusFilter} onChange={handleFilter} />
         <SearchBar value={query} onChange={handleSearch} />
         <p>Searching for: {query}</p>
         <Collection items={visibleItems} onDelete={handleDelete} />
