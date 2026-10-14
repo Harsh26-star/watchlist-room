@@ -26,17 +26,19 @@ function App() {
     setStatusFilter(status)
   }
 
-  function handleAdd(title) {
-    if(title.trim() !== "") {setItems([
-      ...items,
-      {
-        id: Date.now(),
-        title: title.trim(),
-        type: "movie",
-        status: "planned",
-        description: ""
-      }
-    ])}
+  function handleAdd(media) {
+    if (media.title.trim() !== "") {
+      setItems([
+        ...items,
+        {
+          id: Date.now(),
+          title: media.title.trim(),
+          type: media.type,
+          status: media.status,
+          description: media.description
+        }
+      ])
+    }
   }
 
   const visibleItems = items.filter((item) => {
@@ -51,7 +53,7 @@ function App() {
         <Header />
         <StatusFilter value={statusFilter} onChange={handleFilter} />
         <SearchBar value={query} onChange={handleSearch} />
-        <AddMediaForm onAdd={handleAdd}/>
+        <AddMediaForm onAdd={handleAdd} />
         <Collection items={visibleItems} onDelete={handleDelete} />
       </main>
     </>
