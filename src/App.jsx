@@ -41,13 +41,22 @@ function App() {
     }
   }
 
+  function handleStatusChange(id, newStatus) {
+    const newItems = items.map((item) =>
+      (item.id === id)
+        ? { ...item, status: newStatus }
+        : item
+    )
+    setItems(newItems)
+  }
+
   const visibleItems = items.filter((item) => {
     const matchesQuery = item.title.toLowerCase().includes(query.toLowerCase())
     const matchesStatus = statusFilter === "all" || item.status === statusFilter
     return matchesQuery && matchesStatus
   });
 
-  const noMatches = items.length > 0 && visibleItems.length === 0;  
+  const noMatches = items.length > 0 && visibleItems.length === 0;
 
   return (
     <>
@@ -56,7 +65,7 @@ function App() {
         <StatusFilter value={statusFilter} onChange={handleFilter} />
         <SearchBar value={query} onChange={handleSearch} />
         <AddMediaForm onAdd={handleAdd} />
-        <Collection items={visibleItems} onDelete={handleDelete} noMatches={noMatches} />
+        <Collection items={visibleItems} onDelete={handleDelete} noMatches={noMatches} onStatusChange={handleStatusChange} />
       </main>
     </>
   )
