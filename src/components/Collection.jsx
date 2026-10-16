@@ -1,6 +1,6 @@
 import MediaCard from './MediaCard'
 
-function Collection({ items, onDelete, noMatches, onStatusChange }) {
+function Collection({ items, onDelete, noMatches, onStatusChange,}) {
 
     if (noMatches) {
         return <p>No items match your search or filter</p>

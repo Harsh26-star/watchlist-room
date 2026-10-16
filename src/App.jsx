@@ -12,6 +12,7 @@ function App() {
   const [items, setItems] = useState(mediaList)
   const [query, setQuery] = useState("")
   const [statusFilter, setStatusFilter] = useState("all");
+  const [sortBy, setSortBy] = useState("title")
 
   function handleDelete(id) {
     const newItems = items.filter((item) => item.id !== id)
@@ -50,11 +51,21 @@ function App() {
     setItems(newItems)
   }
 
+  function handleSort(sort) {
+    setSortBy(sort)
+  }
+
   const visibleItems = items.filter((item) => {
     const matchesQuery = item.title.toLowerCase().includes(query.toLowerCase())
     const matchesStatus = statusFilter === "all" || item.status === statusFilter
     return matchesQuery && matchesStatus
   });
+
+  const sortedItems = [...visibleItems].sort((a, b) =>
+    sortBy === "title"
+      ? a.title.localeCompare(b.title)
+      : b.id - a.id
+  );
 
   const noMatches = items.length > 0 && visibleItems.length === 0;
 
@@ -63,9 +74,9 @@ function App() {
       <main className='max-w-5xl mx-auto px-5'>
         <Header />
         <StatusFilter value={statusFilter} onChange={handleFilter} />
-        <SearchBar value={query} onChange={handleSearch} />
+        <SearchBar value={query} onChange={handleSearch} onSort={handleSort} sort={sortBy} />
         <AddMediaForm onAdd={handleAdd} />
-        <Collection items={visibleItems} onDelete={handleDelete} noMatches={noMatches} onStatusChange={handleStatusChange} />
+        <Collection items={sortedItems} onDelete={handleDelete} noMatches={noMatches} onStatusChange={handleStatusChange} />
       </main>
     </>
   )
