@@ -1,10 +1,12 @@
-const statuses = ["all", "planned", "watching", "completed"]
+import { STATUSES } from "../constants"
+
+const allStatuses = ['all', ...STATUSES]
 
 function StatusFilter({ value, onChange }) {
 
   return (
     <div>
-      {statuses.map((status) => (
+      {allStatuses.map((status) => (
         <button
           key={status}
           onClick={() => onChange(status)}

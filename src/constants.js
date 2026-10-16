@@ -1,0 +1,1 @@
+export const STATUSES = ['planned','watching','completed',]

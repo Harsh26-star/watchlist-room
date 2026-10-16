@@ -1,3 +1,5 @@
+import { STATUSES } from "../constants"
+
 const statusStyle = {
   completed: "bg-gray-800 text-green-400",
   watching: "bg-gray-800 text-blue-400",
@@ -12,9 +14,9 @@ function MediaCard({ media, onDelete, onStatusChange }) {
       <p>{media.type}</p>
       <select name="status" value={media.status} onChange={(e) => onStatusChange(media.id, e.target.value)}
         className={`px-2 inline-block py-1 rounded-full text-sm ${statusStyle[media.status] ?? "bg-gray-800 text-gray-200"}`}>
-        <option value="planned">planned</option>
-        <option value="watching">watching</option>
-        <option value="completed">completed</option>
+        {STATUSES.map((status) => (
+          <option key={status} value={status}>{status}</option>
+        ))}
       </select>
       <p>{media.description}</p>
       <button onClick={() => onDelete(media.id)}>Delete</button>

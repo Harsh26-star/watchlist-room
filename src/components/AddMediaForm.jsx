@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { STATUSES } from "../constants"
 
 const mediaInfo = {
     title: "",
@@ -31,9 +32,9 @@ function AddMediaForm({ onAdd }) {
                 <option value="video">video</option>
             </select>
             <select name="status" value={newMedia.status} onChange={handleChange}>
-                <option value="planned">planned</option>
-                <option value="watching">watching</option>
-                <option value="completed">completed</option>
+                {STATUSES.map((status) => (
+                    <option key={status} value={status}>{status}</option>
+                ))}
             </select>
             <textarea name="description" value={newMedia.description} onChange={handleChange} className="border mx-2"></textarea>
             <button type="submit">Add</button>
@@ -42,4 +43,3 @@ function AddMediaForm({ onAdd }) {
 }
 
 export default AddMediaForm
- 
