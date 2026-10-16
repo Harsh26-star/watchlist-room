@@ -55,6 +55,15 @@ function App() {
     setSortBy(sort)
   }
 
+  function handleEdit(id, newTitle) {
+    const newItems = items.map((item) => 
+    (item.id === id && newTitle.trim() !== "")
+      ? { ...item, title: newTitle.trim()}
+      : item
+    )
+    setItems(newItems)
+  }
+
   const visibleItems = items.filter((item) => {
     const matchesQuery = item.title.toLowerCase().includes(query.toLowerCase())
     const matchesStatus = statusFilter === "all" || item.status === statusFilter
@@ -76,7 +85,7 @@ function App() {
         <StatusFilter value={statusFilter} onChange={handleFilter} />
         <SearchBar value={query} onChange={handleSearch} onSort={handleSort} sort={sortBy} />
         <AddMediaForm onAdd={handleAdd} />
-        <Collection items={sortedItems} onDelete={handleDelete} noMatches={noMatches} onStatusChange={handleStatusChange} />
+        <Collection items={sortedItems} onDelete={handleDelete} noMatches={noMatches} onStatusChange={handleStatusChange} onEdit={handleEdit}/>
       </main>
     </>
   )

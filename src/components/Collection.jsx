@@ -1,6 +1,6 @@
 import MediaCard from './MediaCard'
 
-function Collection({ items, onDelete, noMatches, onStatusChange,}) {
+function Collection({ items, onDelete, noMatches, onStatusChange, onEdit}) {
 
     if (noMatches) {
         return <p>No items match your search or filter</p>
@@ -12,7 +12,7 @@ function Collection({ items, onDelete, noMatches, onStatusChange,}) {
         <ul className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
             {items.map((item) => (
                 <li key={item.id}>
-                    <MediaCard media={item} onDelete={onDelete} onStatusChange={onStatusChange} />
+                    <MediaCard media={item} onDelete={onDelete} onStatusChange={onStatusChange} onEdit={onEdit}/>
                 </li>
             ))}
         </ul >
