@@ -1,16 +1,24 @@
-const http = require("http")
+let media = [{"id": 1, "title": "Inception"},{"id": 2, "title": "Interstellar"}]
 
-const server = http.createServer((req, res) => {
-    if(req.url === "/" && req.method === "GET") {
-        res.end("Home")
-    }else if (req.url === "/media" && req.method === "GET") {
-        res.setHeader("Content-Type", "application/json")
-        res.end(JSON.stringify(([{"id":1,"title":"Inception"}])))
-    }else {
-        res.statusCode = 404
-        res.end("Not found")
-        
-    }
+const express = require('express')
+const app = express();
+const port = 3000; 
+
+app.use(express.json())
+
+app.get("/", (req, res) => {
+    res.send("Home")
+})
+app.get("/media", (req, res) => {
+    res.json(media) 
+})
+app.post("/media", (req, res) => {
+    const newItem = {id: Date.now(), title: req.body.title}
+    media.push(newItem)
+    console.log(newItem)
+    res.status(201).json(newItem)
 })
 
-server.listen(3000)
+app.listen(port, () => {
+    console.log(`Server running on port 3000`)
+})
