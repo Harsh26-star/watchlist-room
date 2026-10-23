@@ -1,7 +1,9 @@
 let medias = [
-  { id: 1, title: "Inception" },
-  { id: 2, title: "Interstellar" },
+  { id: 1, title: "Inception", status: "planned" },
+  { id: 2, title: "Interstellar", status: "completed" },
 ];
+
+const statuses = ["watching", "completed", "planned"];
 
 const express = require("express");
 const app = express();
@@ -31,15 +33,32 @@ app.post("/media", (req, res) => {
 });
 
 app.delete("/media/:id", (req, res) => {
-  console.log(typeof req.params.id);
   const id = Number(req.params.id);
   if (!medias.some((media) => media.id === id)) {
     res.status(404).json({ error: "The id doesn't exist" });
     return;
   }
-  const newMedia = medias.filter((media) => media.id !== id)
-  medias = newMedia
-  res.sendStatus(204)
+  const newMedia = medias.filter((media) => media.id !== id);
+  medias = newMedia;
+  res.sendStatus(204);
+});
+
+app.patch("/media/:id", (req, res) => {
+  const id = Number(req.params.id);
+  if (!medias.some((media) => media.id === id)) {
+    res.status(404).json({ error: "The id doesn't exist" });
+    return;
+  }
+  if (!statuses.includes(req.body?.status)) {
+    res.status(400).json({ error: "Enter a valid status" });
+    return;
+  }
+  const newMedias = medias.map((media) =>
+    media.id === id ? { ...media, status: req.body.status } : media,
+  );
+  medias = newMedias;
+  const changedStatus = medias.find((media) => media.id === id)
+  res.status(200).json(changedStatus);
 });
 
 app.listen(port, () => {
