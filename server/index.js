@@ -1,6 +1,6 @@
 let medias = [
-  { id: 1, title: "Inception", status: "planned" },
-  { id: 2, title: "Interstellar", status: "completed" },
+  { id: 1, title: "Inception", status: "planned", type: "movie", description: "A thief who enters peoples dreams and steals their information or affects their decisions" },
+  { id: 2, title: "Interstellar", status: "completed", type: "movie", description: "A pilot is send to a blackhole to look for other habitable planet as earth is about to be inhabitable" },
 ];
 
 const statuses = ["watching", "completed", "planned"];

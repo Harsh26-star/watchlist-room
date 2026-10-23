@@ -1,6 +1,5 @@
 import './App.css'
-import { useState } from 'react';
-import { mediaList } from './data/sampleMedia';
+import { useEffect, useState } from 'react';
 import Collection from './components/Collection';
 import Header from './components/Header';
 import SearchBar from './components/SearchBar';
@@ -9,10 +8,15 @@ import AddMediaForm from './components/AddMediaForm';
 
 function App() {
 
-  const [items, setItems] = useState(mediaList)
+  const [items, setItems] = useState([])
   const [query, setQuery] = useState("")
   const [statusFilter, setStatusFilter] = useState("all");
   const [sortBy, setSortBy] = useState("title")
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetch('http://localhost:3000/media').then((res) => res.json()).then((res) => setItems(res)).catch((error) => console.log(error)).finally(() => setLoading(false))
+  }, [])
 
   function handleDelete(id) {
     const newItems = items.filter((item) => item.id !== id)
@@ -56,10 +60,10 @@ function App() {
   }
 
   function handleEdit(id, newTitle) {
-    const newItems = items.map((item) => 
-    (item.id === id && newTitle.trim() !== "")
-      ? { ...item, title: newTitle.trim()}
-      : item
+    const newItems = items.map((item) =>
+      (item.id === id && newTitle.trim() !== "")
+        ? { ...item, title: newTitle.trim() }
+        : item
     )
     setItems(newItems)
   }
@@ -85,7 +89,10 @@ function App() {
         <StatusFilter value={statusFilter} onChange={handleFilter} />
         <SearchBar value={query} onChange={handleSearch} onSort={handleSort} sort={sortBy} />
         <AddMediaForm onAdd={handleAdd} />
-        <Collection items={sortedItems} onDelete={handleDelete} noMatches={noMatches} onStatusChange={handleStatusChange} onEdit={handleEdit}/>
+        {loading
+          ? <div>Loading...</div>
+          : <Collection items={sortedItems} onDelete={handleDelete} noMatches={noMatches} onStatusChange={handleStatusChange} onEdit={handleEdit} />
+        }
       </main>
     </>
   )
