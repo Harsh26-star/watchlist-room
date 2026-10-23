@@ -13,9 +13,17 @@ function App() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [sortBy, setSortBy] = useState("title")
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
-    fetch('http://localhost:3000/media').then((res) => res.json()).then((res) => setItems(res)).catch((error) => console.log(error)).finally(() => setLoading(false))
+    fetch('http://localhost:3000/media')
+      .then((res) => {
+        if (!res.ok) throw new Error("Invalid server response");
+        return res.json();
+      })
+      .then((res) => setItems(res))
+      .catch(() => setError("Couldn't load your watchlist"))
+      .finally(() => setLoading(false))
   }, [])
 
   function handleDelete(id) {
@@ -91,7 +99,9 @@ function App() {
         <AddMediaForm onAdd={handleAdd} />
         {loading
           ? <div>Loading...</div>
-          : <Collection items={sortedItems} onDelete={handleDelete} noMatches={noMatches} onStatusChange={handleStatusChange} onEdit={handleEdit} />
+          : error
+            ? <div>{error}</div>
+            : <Collection items={sortedItems} onDelete={handleDelete} noMatches={noMatches} onStatusChange={handleStatusChange} onEdit={handleEdit} />
         }
       </main>
     </>
