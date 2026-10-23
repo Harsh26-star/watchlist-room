@@ -4,6 +4,7 @@ let medias = [
 ];
 
 const statuses = ["watching", "completed", "planned"];
+const types = ["movie", "anime", "video"]
 
 const express = require("express");
 const app = express();
@@ -26,7 +27,19 @@ app.post("/media", (req, res) => {
     res.status(400).json({ error: "Invalid title syntax" });
     return;
   }
-  const newItem = { id: Date.now(), title: req.body.title.trim() };
+  if (!types.includes(req.body?.type)){
+    res.status(400).json({ error: "Invalid type entered" });
+    return;
+  }
+  if (!statuses.includes(req.body?.status)) {
+    res.status(400).json({ error: "Invalid status entered" });
+    return;
+  }
+  if (req.body.description !== undefined && typeof req.body.description !== "string") {
+    res.status(400).json({ error: "Invalid Description syntax"})
+    return
+  }
+  const newItem = { id: Date.now(), title: req.body.title.trim(), status: req.body.status, type: req.body.type, description:req.body?.description?.trim() ?? ""};
   medias.push(newItem);
   console.log(newItem);
   res.status(201).json(newItem);
