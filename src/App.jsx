@@ -15,6 +15,7 @@ function App() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [addError, setAddError] = useState(null)
+  const [delError, setDelError] = useState(null)
 
   useEffect(() => {
     fetch('http://localhost:3000/media')
@@ -27,9 +28,19 @@ function App() {
       .finally(() => setLoading(false))
   }, [])
 
-  function handleDelete(id) {
-    const newItems = items.filter((item) => item.id !== id)
-    setItems(newItems)
+  async function handleDelete(id) {
+    try {
+      const res = await fetch(`http://localhost:3000/media/${id}`, {
+        method: "DELETE"
+      })
+      if (!res.ok) { throw new Error("Couldn't delete at the moment") }
+      const newItems = items.filter((item) => item.id !== id)
+      setItems(newItems)
+      setDelError(null)
+    }
+    catch {
+      setDelError("Try again later")
+    }
   }
 
   function handleSearch(e) {
@@ -47,7 +58,7 @@ function App() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(media)
       })
-      const saved = await res.json()
+      const saved = await res.json() // add a .catch() to counter the case when the res is not json
       if (!res.ok) {
         throw new Error(saved.error)
       }
@@ -114,7 +125,10 @@ function App() {
           ? <div>Loading...</div>
           : error
             ? <div>{error}</div>
-            : <Collection items={sortedItems} onDelete={handleDelete} noMatches={noMatches} onStatusChange={handleStatusChange} onEdit={handleEdit} />
+            : <>
+              <Collection items={sortedItems} onDelete={handleDelete} noMatches={noMatches} onStatusChange={handleStatusChange} onEdit={handleEdit} />
+              {delError && <p>{delError}</p>}
+            </>
         }
       </main>
     </>
