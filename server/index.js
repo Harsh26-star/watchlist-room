@@ -1,23 +1,35 @@
 let medias = [
-  { id: 1, title: "Inception", status: "planned", type: "movie", description: "A thief who enters peoples dreams and steals their information or affects their decisions" },
-  { id: 2, title: "Interstellar", status: "completed", type: "movie", description: "A pilot is send to a blackhole to look for other habitable planet as earth is about to be inhabitable" },
+  {
+    id: 1,
+    title: "Inception",
+    status: "planned",
+    type: "movie",
+    description:
+      "A thief who enters peoples dreams and steals their information or affects their decisions",
+  },
+  {
+    id: 2,
+    title: "Interstellar",
+    status: "completed",
+    type: "movie",
+    description:
+      "A pilot is send to a blackhole to look for other habitable planet as earth is about to be inhabitable",
+  },
 ];
 
 const statuses = ["watching", "completed", "planned"];
-const types = ["movie", "anime", "video"]
+const types = ["movie", "anime", "video"];
 
 const express = require("express");
 const app = express();
-const cors = require('cors')
+const cors = require("cors");
 const port = 3000;
 const corsOptions = {
-  origin: 'http://localhost:5173'
-}
-
+  origin: "http://localhost:5173",
+};
 
 app.use(express.json());
-app.use(cors(corsOptions))
-
+app.use(cors(corsOptions));
 
 app.get("/", (req, res) => {
   res.send("Home");
@@ -34,7 +46,7 @@ app.post("/media", (req, res) => {
     res.status(400).json({ error: "Invalid title syntax" });
     return;
   }
-  if (!types.includes(req.body?.type)){
+  if (!types.includes(req.body?.type)) {
     res.status(400).json({ error: "Invalid type entered" });
     return;
   }
@@ -42,11 +54,20 @@ app.post("/media", (req, res) => {
     res.status(400).json({ error: "Invalid status entered" });
     return;
   }
-  if (req.body.description !== undefined && typeof req.body.description !== "string") {
-    res.status(400).json({ error: "Invalid Description syntax"})
-    return
+  if (
+    req.body.description !== undefined &&
+    typeof req.body.description !== "string"
+  ) {
+    res.status(400).json({ error: "Invalid Description syntax" });
+    return;
   }
-  const newItem = { id: Date.now(), title: req.body.title.trim(), status: req.body.status, type: req.body.type, description:req.body?.description?.trim() ?? ""};
+  const newItem = {
+    id: Date.now(),
+    title: req.body.title.trim(),
+    status: req.body.status,
+    type: req.body.type,
+    description: req.body?.description?.trim() ?? "",
+  };
   medias.push(newItem);
   console.log(newItem);
   res.status(201).json(newItem);
@@ -69,16 +90,33 @@ app.patch("/media/:id", (req, res) => {
     res.status(404).json({ error: "The id doesn't exist" });
     return;
   }
-  if (!statuses.includes(req.body?.status)) {
-    res.status(400).json({ error: "Enter a valid status" });
+  if (req.body?.status && !statuses.includes(req.body?.status)) {
+    res.status(400).json({ error: "Enter a valid Status" });
+    return;
+  }
+  if (
+    req.body?.title !== undefined &&
+    (typeof req.body.title !== "string" || req.body.title.trim() === "")
+  ) {
+    res.status(400).json({ error: "Invalid title syntax" });
+    return;
+  }
+  if (!req.body.title && !req.body.status) {
+    res.status(400).json({ error: "Enter a title or status" });
     return;
   }
   const newMedias = medias.map((media) =>
-    media.id === id ? { ...media, status: req.body.status } : media,
+    media.id === id
+      ? {
+          ...media,
+          title: req.body.title?.trim() ?? media.title,
+          status: req.body.status ?? media.status,
+        }
+      : media,
   );
   medias = newMedias;
-  const changedStatus = medias.find((media) => media.id === id)
-  res.status(200).json(changedStatus);
+  const changedMedias = medias.find((media) => media.id === id);
+  res.status(200).json(changedMedias);
 });
 
 app.listen(port, () => {
