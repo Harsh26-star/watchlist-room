@@ -47,15 +47,20 @@ function App() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(media)
       })
-      if (!res.ok) throw new Error("Failed to add media")
       const saved = await res.json()
+      if (!res.ok) {
+        throw new Error(saved.error)
+      }
       setItems([
         ...items, saved
       ])
       setAddError(null)
     } catch (error) {
-      console.error(error)
-      setAddError("This title couldn't be added at this moment")
+      if (error instanceof TypeError) {
+        setAddError("This title couldn't be added at this moment")
+      } else {
+        setAddError(error.message)
+      }
     }
   }
 
@@ -104,6 +109,7 @@ function App() {
         <SearchBar value={query} onChange={handleSearch} onSort={handleSort} sort={sortBy} />
         <AddMediaForm onAdd={handleAdd} />
         {addError && <p>{addError}</p>}
+
         {loading
           ? <div>Loading...</div>
           : error
