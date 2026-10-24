@@ -22,7 +22,7 @@ function App() {
         return res.json();
       })
       .then((res) => setItems(res))
-      .catch((error) => { console.error(error); setError("Couldn't load your watchlist") }) 
+      .catch((error) => { console.error(error); setError("Couldn't load your watchlist") })
       .finally(() => setLoading(false))
   }, [])
 
@@ -39,19 +39,20 @@ function App() {
     setStatusFilter(status)
   }
 
-  function handleAdd(media) {
-    if (media.title.trim() !== "") {
-      setItems([
-        ...items,
-        {
-          id: Date.now(),
-          title: media.title.trim(),
-          type: media.type,
-          status: media.status,
-          description: media.description
-        }
-      ])
+  async function handleAdd(media) {
+    const res = await fetch("http://localhost:3000/media", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(media)
+    })
+    if (!res.ok) {
+      return
     }
+    const saved = await res.json()
+    setItems([
+      ...items, saved
+    ])
+
   }
 
   function handleStatusChange(id, newStatus) {
