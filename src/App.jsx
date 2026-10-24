@@ -14,6 +14,7 @@ function App() {
   const [sortBy, setSortBy] = useState("title")
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [addError, setAddError] = useState(null)
 
   useEffect(() => {
     fetch('http://localhost:3000/media')
@@ -40,19 +41,22 @@ function App() {
   }
 
   async function handleAdd(media) {
-    const res = await fetch("http://localhost:3000/media", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(media)
-    })
-    if (!res.ok) {
-      return
+    try {
+      const res = await fetch("http://localhost:3000/media", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(media)
+      })
+      if (!res.ok) throw new Error("Failed to add media")
+      const saved = await res.json()
+      setItems([
+        ...items, saved
+      ])
+      setAddError(null)
+    } catch (error) {
+      console.error(error)
+      setAddError("This title couldn't be added at this moment")
     }
-    const saved = await res.json()
-    setItems([
-      ...items, saved
-    ])
-
   }
 
   function handleStatusChange(id, newStatus) {
@@ -63,6 +67,7 @@ function App() {
     )
     setItems(newItems)
   }
+
 
   function handleSort(sort) {
     setSortBy(sort)
@@ -98,6 +103,7 @@ function App() {
         <StatusFilter value={statusFilter} onChange={handleFilter} />
         <SearchBar value={query} onChange={handleSearch} onSort={handleSort} sort={sortBy} />
         <AddMediaForm onAdd={handleAdd} />
+        {addError && <p>{addError}</p>}
         {loading
           ? <div>Loading...</div>
           : error
