@@ -22,7 +22,7 @@ function App() {
         return res.json();
       })
       .then((res) => setItems(res))
-      .catch(() => setError("Couldn't load your watchlist"))
+      .catch((error) => { console.error(error); setError("Couldn't load your watchlist") }) 
       .finally(() => setLoading(false))
   }, [])
 
