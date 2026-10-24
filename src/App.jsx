@@ -16,6 +16,7 @@ function App() {
   const [error, setError] = useState(null)
   const [addError, setAddError] = useState(null)
   const [delError, setDelError] = useState(null)
+  const [statusError, setStatusError] = useState(null)
 
   useEffect(() => {
     fetch('http://localhost:3000/media')
@@ -75,13 +76,32 @@ function App() {
     }
   }
 
-  function handleStatusChange(id, newStatus) {
-    const newItems = items.map((item) =>
-      (item.id === id)
-        ? { ...item, status: newStatus }
-        : item
-    )
-    setItems(newItems)
+  async function handleStatusChange(id, newStatus) {
+    try {
+      const res = await fetch(`http://localhost:3000/media/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({status : newStatus})
+      })
+      const saved = await res.json()
+      if (!res.ok) {
+        throw new Error(saved.error)
+      }
+      const newItems = items.map((item) =>
+        (item.id === id)
+          ? saved
+          : item
+      )
+      setItems(newItems)
+      setStatusError(null)
+    }
+    catch (error) {
+      if (error instanceof TypeError) {
+        setStatusError("This status couldn't be changed at the moment")
+      } else {
+        setStatusError(error.message)
+      }
+    }
   }
 
 
@@ -128,6 +148,7 @@ function App() {
             : <>
               <Collection items={sortedItems} onDelete={handleDelete} noMatches={noMatches} onStatusChange={handleStatusChange} onEdit={handleEdit} />
               {delError && <p>{delError}</p>}
+              {statusError && <p>{statusError}</p>}
             </>
         }
       </main>
