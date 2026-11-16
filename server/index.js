@@ -1,3 +1,5 @@
+require("./db");
+
 let medias = [
   {
     id: 1,
@@ -23,6 +25,7 @@ const types = ["movie", "anime", "video"];
 const express = require("express");
 const app = express();
 const cors = require("cors");
+const pool = require("./db");
 const port = 3000;
 const corsOptions = {
   origin: "http://localhost:5173",
@@ -34,9 +37,17 @@ app.use(cors(corsOptions));
 app.get("/", (req, res) => {
   res.send("Home");
 });
-app.get("/media", (req, res) => {
-  res.json(medias);
+
+app.get("/media", async (req,res) => {
+  try {
+    const result = await pool.query("SELECT * FROM media ORDER BY id");
+    res.json(result.rows);
+  } catch(error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 });
+
 app.post("/media", (req, res) => {
   if (
     !req.body ||
