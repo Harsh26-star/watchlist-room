@@ -86,19 +86,27 @@ app.post("/media", async (req, res) => {
     res.status(201).json(result.rows[0]);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Internal Server error"});
+    res.status(500).json({ error: "Internal Server error" });
   }
 });
 
-app.delete("/media/:id", (req, res) => {
+app.delete("/media/:id", async (req, res) => {
   const id = Number(req.params.id);
-  if (!medias.some((media) => media.id === id)) {
-    res.status(404).json({ error: "The id doesn't exist" });
+  if (!Number.isInteger(id)) {
+    res.status(400).json({ error: "Invalid id syntax" });
     return;
   }
-  const newMedia = medias.filter((media) => media.id !== id);
-  medias = newMedia;
-  res.sendStatus(204);
+  try {
+    const result = await pool.query("DELETE FROM media WHERE id = $1", [id]);
+    if (result.rowCount === 0) {
+      res.status(404).json({ error: "The id doesn't exist" });
+      return;
+    }
+    res.sendStatus(204);
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server error" });
+    console.error(error);
+  }
 });
 
 app.patch("/media/:id", (req, res) => {
