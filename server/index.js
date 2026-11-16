@@ -38,17 +38,17 @@ app.get("/", (req, res) => {
   res.send("Home");
 });
 
-app.get("/media", async (req,res) => {
+app.get("/media", async (req, res) => {
   try {
     const result = await pool.query("SELECT * FROM media ORDER BY id");
     res.json(result.rows);
-  } catch(error) {
+  } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
-app.post("/media", (req, res) => {
+app.post("/media", async (req, res) => {
   if (
     !req.body ||
     typeof req.body.title !== "string" ||
@@ -73,15 +73,21 @@ app.post("/media", (req, res) => {
     return;
   }
   const newItem = {
-    id: Date.now(),
     title: req.body.title.trim(),
     status: req.body.status,
     type: req.body.type,
     description: req.body?.description?.trim() ?? "",
   };
-  medias.push(newItem);
-  console.log(newItem);
-  res.status(201).json(newItem);
+  try {
+    const result = await pool.query(
+      "INSERT INTO media (title, type, status, description) VALUES ($1, $2, $3, $4) RETURNING *",
+      [newItem.title, newItem.type, newItem.status, newItem.description],
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server error"});
+  }
 });
 
 app.delete("/media/:id", (req, res) => {
