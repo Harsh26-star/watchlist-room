@@ -1,24 +1,5 @@
 require("./db");
 
-let medias = [
-  {
-    id: 1,
-    title: "Inception",
-    status: "planned",
-    type: "movie",
-    description:
-      "A thief who enters peoples dreams and steals their information or affects their decisions",
-  },
-  {
-    id: 2,
-    title: "Interstellar",
-    status: "completed",
-    type: "movie",
-    description:
-      "A pilot is send to a blackhole to look for other habitable planet as earth is about to be inhabitable",
-  },
-];
-
 const statuses = ["watching", "completed", "planned"];
 const types = ["movie", "anime", "video"];
 
@@ -109,10 +90,10 @@ app.delete("/media/:id", async (req, res) => {
   }
 });
 
-app.patch("/media/:id", (req, res) => {
+app.patch("/media/:id", async (req, res) => {
   const id = Number(req.params.id);
-  if (!medias.some((media) => media.id === id)) {
-    res.status(404).json({ error: "The id doesn't exist" });
+  if (!Number.isInteger(id)) {
+    res.status(400).json({ error: "Invalid id syntax" });
     return;
   }
   if (req.body?.status && !statuses.includes(req.body?.status)) {
@@ -126,22 +107,24 @@ app.patch("/media/:id", (req, res) => {
     res.status(400).json({ error: "Invalid title syntax" });
     return;
   }
-  if (!req.body.title && !req.body.status) {
+  if (!req.body?.title && !req.body?.status) {
     res.status(400).json({ error: "Enter a title or status" });
     return;
   }
-  const newMedias = medias.map((media) =>
-    media.id === id
-      ? {
-          ...media,
-          title: req.body.title?.trim() ?? media.title,
-          status: req.body.status ?? media.status,
-        }
-      : media,
-  );
-  medias = newMedias;
-  const changedMedias = medias.find((media) => media.id === id);
-  res.status(200).json(changedMedias);
+  try {
+    const result = await pool.query(
+      "UPDATE media SET title = COALESCE($1, title), status = COALESCE($2, status) WHERE id = $3 RETURNING *",
+      [req.body.title?.trim() ?? null, req.body.status, id],
+    );
+    if (result.rows.length === 0) {
+      res.status(404).json({ error: "The id doesn't exist" });
+      return;
+    }
+    res.status(200).json(result.rows[0]);
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+    console.error(error);
+  }
 });
 
 app.listen(port, () => {
